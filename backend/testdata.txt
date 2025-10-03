@@ -1,0 +1,13 @@
+{
+  "name" : "Abhin",
+  "rollNo" : "3",
+  "email" : "abhin0824@gmail.com",
+  "password" : "testuser123"
+}
+
+{
+  "name" : "Nasar",
+  "facultyId" : "1",
+  "email" : "example@gmail.com",
+  "password" : "NasarKottayil123"
+}
