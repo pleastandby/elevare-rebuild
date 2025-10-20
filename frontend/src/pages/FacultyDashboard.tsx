@@ -6,10 +6,7 @@ import UploadSyllabus from "./Sections/Faculty/UploadSyllabus";
 import ViewResults from "./Sections/Faculty/ViewResults";
 
 const FacultyDashboard = ({setToken}: {setToken: (token: string) => void}) => {
-  
-  const [students, setStudents] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('') 
+   
   const [selectedOption, setSelectedOption] = useState('Overview')
   const [activeOption, setActiveOption] = useState('Overview')
 

@@ -4,7 +4,10 @@ import { backendUrl } from "../App";
 import FacultyDashboard from "./FacultyDashboard";
 import StudentDashboard from "./StudenDashboard";
 import Header from'../components/Header';
-
+/*
+NOTE TO THE COLLABORATOR:
+  If there is an error, only student Dashboard will be loaded check comments for more info
+*/
 const Dashboard = ({setToken}: {setToken: (token: string) => void}) => {
   const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -27,7 +30,7 @@ const Dashboard = ({setToken}: {setToken: (token: string) => void}) => {
         if (response.data.success) {
           setRole(response.data.role);
         } else {
-          // Default to student if there's an error
+          // Default to student if there's an error (debugging statement)
           setRole('student');
         }
       } catch (error: any) {
