@@ -4,6 +4,7 @@ import 'dotenv/config'
 import connectDB from './config/mongodb.js'
 import userRouter from './routes/userRoutes.js'
 import errorHandler from './middleware/error.js'
+import uploadRoutes from './routes/uploadRoutes.js'
 
 const app = express()
 const port = process.env.PORT || 4000

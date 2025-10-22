@@ -23,9 +23,10 @@ const storage = multer.diskStorage({
     cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const originalName = path.basename(file.originalname, path.extname(file.originalname));
+    const dateTime = new Date().toISOString().replace(/[:.]/g, '-');
     const ext = path.extname(file.originalname);
-    cb(null, file.fieldname + "-" + uniqueSuffix + ext);
+    cb(null, `${originalName}_${dateTime}${ext}`);
   },
 });
 
