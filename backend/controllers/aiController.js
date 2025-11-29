@@ -10,7 +10,7 @@ export const generateAssignment = async (req, res) => {
         console.log('AI Generation Request - User:', req.user);
         
         const { assignmentId } = req.params;
-        const { portions, count = 3 } = req.body;
+        const { portions, count = 5 } = req.body;
 
         // Get the assignment details
         const assignment = await AssignmentRecords.findById(assignmentId);
@@ -72,9 +72,10 @@ export const generateAssignment = async (req, res) => {
             console.log('📄 No file URL found in assignment');
         }
 
+        const numberOfQuestions = count || 5;
         // Prepare the prompt
         const prompt = `
-        Create ${count} assignments based on the following details:
+        Create ${numberOfQuestions} assignments based on the following details:
         
         Topic/Portions: ${portions || "Not specified"}
         Instructions: ${assignment.instructions || "No additional instructions provided"}

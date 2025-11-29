@@ -9,7 +9,7 @@ export const createAssignment = async (req, res) => {
         console.log('Request file:', req.file);
         console.log('User from auth:', req.user);
         
-        const { name, description, duedate, keywords, instructions, syllabus, existingFilePath, existingFileName } = req.body;
+        const { name, description, duedate, keywords, instructions, syllabus, existingFilePath, existingFileName, count } = req.body;
         const uploadedFile = req.file;
         
         const assignmentData = {
@@ -19,6 +19,7 @@ export const createAssignment = async (req, res) => {
             keywords: Array.isArray(keywords) ? keywords : keywords?.split(',').map(k => k.trim()) || [],
             instructions,
             syllabus,
+            count: count || 5,
             facultyId: req.user.id,
         };
 

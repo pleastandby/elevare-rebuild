@@ -26,6 +26,10 @@ const AssignmentSchema = new mongoose.Schema({
         required: [true, "Please add a syllabus"],
         trim: true
     },
+    count: {
+        type: Number,
+        default: 5
+    },
     fileUrl: {
         type: String,
         default: null

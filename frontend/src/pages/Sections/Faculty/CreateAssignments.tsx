@@ -24,6 +24,7 @@ interface FormData {
   keywords: string;
   instructions: string;
   syllabus: string;
+  count: number;
 }
 
 const CreateAssignments = ({ onNavigateToUpload }: CreateAssignmentsProps) => {
@@ -35,7 +36,8 @@ const CreateAssignments = ({ onNavigateToUpload }: CreateAssignmentsProps) => {
     duedate: '',
     keywords: '',
     instructions: '',
-    syllabus: ''
+    syllabus: '',
+    count: 5
   });
   const [loading, setLoading] = useState(false);
 
@@ -120,7 +122,7 @@ const CreateAssignments = ({ onNavigateToUpload }: CreateAssignmentsProps) => {
         `${backendUrl}/api/ai/assignments/${createdAssignment._id}/generate`,
         {
           portions: formData.keywords || 'General',
-          count: 3
+          count: formData.count
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -144,7 +146,8 @@ const CreateAssignments = ({ onNavigateToUpload }: CreateAssignmentsProps) => {
         duedate: '',
         keywords: '',
         instructions: '',
-        syllabus: ''
+        syllabus: '',
+        count: 5
       });
       setSelectedSyllabi({});
       
@@ -163,7 +166,7 @@ const CreateAssignments = ({ onNavigateToUpload }: CreateAssignmentsProps) => {
     const { id, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [id]: value
+      [id]: id === 'count' ? parseInt(value) || 5 : value
     }));
   };
 
@@ -271,6 +274,18 @@ const CreateAssignments = ({ onNavigateToUpload }: CreateAssignmentsProps) => {
               onChange={handleInputChange}
               className="pl-3 m-2 min-h-10 bg-white outline-none rounded-sm border-2 border-gray-200"
               placeholder="Enter assignment description"
+            />
+            <label htmlFor="count"
+              className="font-[500] m-2"
+              >Number of Questions 
+            </label>
+            <input 
+              type="number" 
+              id="count" 
+              value={formData.count}
+              onChange={handleInputChange}
+              className="pl-3 m-2 min-h-10 bg-white outline-none rounded-sm border-2 border-gray-200"
+              placeholder="Enter number of questions"
             />
             <label htmlFor="duedate"
               className="font-[500] m-2"

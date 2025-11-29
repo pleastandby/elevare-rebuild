@@ -86,6 +86,10 @@ export async function generateText(prompt, modelName = DEFAULT_MODEL) {
   
   // Generate dynamic mock questions based on the prompt content
   const generateDynamicMockQuestions = (prompt) => {
+    // Extract count from prompt
+    const countMatch = prompt.match(/Create\s+(\d+)\s+assignments/);
+    const requestedCount = countMatch ? parseInt(countMatch[1]) : 5;
+    
     // Extract topic from prompt
     const topicMatch = prompt.match(/Topic\/Portions:\s*([^\n]+)/);
     const topic = topicMatch ? topicMatch[1].trim() : "General Topic";
@@ -198,6 +202,28 @@ export async function generateText(prompt, modelName = DEFAULT_MODEL) {
       if (topic.toLowerCase().includes(key.toLowerCase())) {
         selectedQuestions = questions;
         break;
+      }
+    }
+    
+    // Adjust the number of questions to match requested count
+    if (selectedQuestions.length !== requestedCount) {
+      if (selectedQuestions.length > requestedCount) {
+        // Truncate if we have too many questions
+        selectedQuestions = selectedQuestions.slice(0, requestedCount);
+      } else {
+        // Repeat questions if we need more (with slight variations)
+        const additionalQuestions = [];
+        let questionIndex = 0;
+        while (selectedQuestions.length + additionalQuestions.length < requestedCount) {
+          const baseQuestion = selectedQuestions[questionIndex % selectedQuestions.length];
+          additionalQuestions.push({
+            ...baseQuestion,
+            question: `${baseQuestion.question} (Additional ${additionalQuestions.length + 1})`,
+            points: baseQuestion.points + Math.floor(Math.random() * 3)
+          });
+          questionIndex++;
+        }
+        selectedQuestions = [...selectedQuestions, ...additionalQuestions];
       }
     }
     
