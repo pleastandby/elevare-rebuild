@@ -11,6 +11,7 @@ const UploadSyllabus = () => {
   const [uploadedFiles, setUploadedFiles] = useState<Array<{ _id: string; name: string; size: number; uploadDate: string; path: string }>>([]);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [lastUploadedFile, setLastUploadedFile] = useState<{name: string, date: string} | null>(null);
 
   const fetchFiles = async () => {
     try {
@@ -56,6 +57,12 @@ const UploadSyllabus = () => {
       const fileInput = document.getElementById("file") as HTMLInputElement;
       if (fileInput) fileInput.value = "";
 
+      // Set the last uploaded file info
+      setLastUploadedFile({
+        name: file?.name || 'File',
+        date: new Date().toLocaleString()
+      });
+      
       // Refresh the file list from server
       await fetchFiles();
     } catch (err: any) {
@@ -107,43 +114,93 @@ const UploadSyllabus = () => {
           Upload syllabus to Create Assignments/Notes
         </p>
 
-        <button
-          type="submit"
-          className={`mt-2 px-4 py-2 ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-800 hover:bg-gray-600'} text-white rounded-lg w-full sm:w-auto self-center`}
-        >
-          {isLoading ? 'Uploading...' : 'Upload'}
-        </button>
+        <div className="mt-4 w-full">
+          <button
+            type="submit"
+            className={`px-4 py-2 ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-800 hover:bg-gray-600'} text-white rounded-lg w-full`}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Uploading...' : 'Upload Syllabus'}
+          </button>
+          
+          {lastUploadedFile && (
+            <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-md">
+              <p className="text-sm text-green-700">
+                <span className="font-medium">Uploaded:</span> {lastUploadedFile.name}
+                <br />
+                <span className="text-xs text-green-600">
+                  {lastUploadedFile.date}
+                </span>
+              </p>
+            </div>
+          )}
+        </div>
       </form>
       
-      <div className="flex flex-col w-full justify-center gap-2 p-2 m-2 bg-gray-200 rounded-lg border-1 border-gray-300 min-h-[50vh] overflow-y-auto">
-        <div className="flex flex-row justify-between gap-1 p-2 m-1">
-          <h2 className="text-3xl-gray-600 font-bold m-4 p-2">Recently Uploaded</h2>
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 mt-4">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-900">Recently Uploaded</h2>
           <button
             onClick={() => setIsEditMode(!isEditMode)}
-            className={`m-1 p-1 rounded-lg border-1 border-gray-300 min-w-[120px] h-10 hover:bg-gray-400 cursor-pointer ${isEditMode ? 'bg-red-500 text-white hover:bg-red-700' : 'bg-gray-100'}`}
+            className={`px-3 py-1.5 text-sm rounded-md ${isEditMode ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
           >
             {isEditMode ? 'Done' : 'Edit'}
           </button>
         </div>
-        <ul className="flex flex-col gap-1 p-2 m-1">
+        
+        <div className="space-y-3">
           {uploadedFiles.length > 0 ? (
-            uploadedFiles.map((uploadedFile) => (
-              <li key={uploadedFile._id} className="p-2 m-2 bg-gray-100 rounded-lg border-1 border-gray-300 flex justify-between items-center">
-                <div>
-                  {uploadedFile.name} ({Math.round(uploadedFile.size / 1024)} KB) - Uploaded: {new Date(uploadedFile.uploadDate).toLocaleDateString()}
+            uploadedFiles.map(file => {
+              const fileName = file.name || 'Document';
+              const fileSize = Math.round(file.size / 1024);
+              const uploadDate = new Date(file.uploadDate).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+              });
+              
+              return (
+                <div key={file._id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {fileName}({fileSize} KB)• Uploaded: {uploadDate}
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-2 ml-4">
+                    <a
+                      href={`${backendUrl}${file.path}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 text-sm font-medium px-2 py-1 rounded hover:bg-blue-50"
+                      title="View/Download"
+                    >
+                      View
+                    </a>
+                    {isEditMode && (
+                      <button
+                        onClick={() => deleteFile(file._id)}
+                        className="text-red-600 hover:text-red-800 p-1 rounded-full hover:bg-red-50"
+                        title="Delete file"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <button
-                  onClick={() => deleteFile(uploadedFile._id)}
-                  className={`ml-2 px-2 py-1 bg-red-500 text-white rounded hover:bg-red-700 ${isEditMode ? 'block' : 'hidden'}`}
-                >
-                  ×
-                </button>
-              </li>
-            ))
+              );
+            })
           ) : (
-            <li className="p-2 m-2 bg-gray-100 rounded-lg border-1 border-gray-300">No files uploaded yet.</li>
+            <div className="text-center py-8 bg-gray-50 rounded-lg">
+              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+              </svg>
+              <h3 className="mt-2 text-sm font-medium text-gray-900">No files uploaded</h3>
+              <p className="mt-1 text-sm text-gray-500">Upload a file to get started.</p>
+            </div>
           )}
-        </ul>
+        </div>
       </div>
     </div>
   )

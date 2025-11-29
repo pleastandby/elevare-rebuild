@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.13",
+    "antd": "^6.0.0",
     "icons": "^1.0.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
+    "@types/antd": "^0.12.32",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.3",
