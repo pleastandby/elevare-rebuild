@@ -9,19 +9,22 @@ if (!process.env.GEMINI_API_KEY) {
 
 // Check if API key looks valid (can be project-based or generic)
 const apiKey = process.env.GEMINI_API_KEY;
+console.log('🔑 Gemini API Key loaded:', apiKey ? 'Key present' : 'Key missing');
+console.log('🔑 API Key length:', apiKey ? apiKey.length : 0);
+console.log('🔑 API Key format check:', apiKey ? (apiKey.startsWith('AIza') ? 'Valid format' : 'Invalid format') : 'N/A');
 
 // Initialize client once (singleton)
 const genAI = new GoogleGenerativeAI(apiKey);
 
-// Default model for Elevare (trying different models based on availability)
-const DEFAULT_MODEL = "gemini-pro"; // Fallback to more widely available model
+// Default model for Elevare (using the correct model names)
+const DEFAULT_MODEL = "gemini-1.5-flash"; // Use the latest available model
 
-// Alternative models to try if default fails
+// Alternative models to try if default fails - updated with correct model names
 const MODEL_FALLBACKS = [
-  "gemini-pro",
-  "gemini-1.0-pro",
+  "gemini-1.5-flash",
   "gemini-1.5-pro",
-  "gemini-1.5-flash"
+  "gemini-pro",
+  "gemini-1.0-pro"
 ];
 
 // Generic helper to get any model with fallback
@@ -76,37 +79,132 @@ export async function generateText(prompt, modelName = DEFAULT_MODEL) {
     }
   }
   
-  // All models failed - return mock response for development
-  console.warn("⚠️ All AI models failed, returning mock response for development");
+  // All models failed - return dynamic mock response for development
+  console.warn("⚠️ All AI models failed, returning dynamic mock response for development");
   console.error("Google AI API Error - All models failed:");
   console.error("Last error:", lastError.message);
   
-  // Return a mock assignment response for development
-  return JSON.stringify({
-    assignments: [
+  // Generate dynamic mock questions based on the prompt content
+  const generateDynamicMockQuestions = (prompt) => {
+    // Extract topic from prompt
+    const topicMatch = prompt.match(/Topic\/Portions:\s*([^\n]+)/);
+    const topic = topicMatch ? topicMatch[1].trim() : "General Topic";
+    
+    // Extract instructions from prompt
+    const instructionsMatch = prompt.match(/Instructions:\s*([^\n]+)/);
+    const instructions = instructionsMatch ? instructionsMatch[1].trim() : "No specific instructions";
+    
+    // Generate questions based on topic
+    const questionTemplates = {
+      "Requirement Analysis": [
+        {
+          question: `What are the key requirements identified in the ${topic}?`,
+          type: "short_answer",
+          points: 8,
+          difficulty: "medium",
+          hint: "Focus on the main functional and non-functional requirements mentioned"
+        },
+        {
+          question: `Explain the requirements gathering process for ${topic}.`,
+          type: "essay",
+          points: 15,
+          difficulty: "hard",
+          hint: "Consider the methodologies and techniques used"
+        },
+        {
+          question: `List the stakeholders involved in ${topic} requirements.`,
+          type: "short_answer",
+          points: 5,
+          difficulty: "easy",
+          hint: "Identify all parties who have interest in the system"
+        }
+      ],
+      "Design": [
+        {
+          question: `Describe the design patterns used in ${topic}.`,
+          type: "short_answer",
+          points: 10,
+          difficulty: "medium",
+          hint: "Look for architectural and design pattern references"
+        },
+        {
+          question: `Compare different design approaches for ${topic}.`,
+          type: "essay",
+          points: 20,
+          difficulty: "hard",
+          hint: "Consider multiple design methodologies and their trade-offs"
+        },
+        {
+          question: `What are the main components in the ${topic} design?`,
+          type: "short_answer",
+          points: 6,
+          difficulty: "easy",
+          hint: "Identify the core building blocks of the system"
+        }
+      ],
+      "Testing": [
+        {
+          question: `What testing strategies are recommended for ${topic}?`,
+          type: "short_answer",
+          points: 8,
+          difficulty: "medium",
+          hint: "Focus on unit, integration, and system testing approaches"
+        },
+        {
+          question: `Design a comprehensive test plan for ${topic}.`,
+          type: "essay",
+          points: 18,
+          difficulty: "hard",
+          hint: "Include test cases, expected results, and acceptance criteria"
+        },
+        {
+          question: `List the types of testing applicable to ${topic}.`,
+          type: "short_answer",
+          points: 5,
+          difficulty: "easy",
+          hint: "Consider functional, performance, and security testing"
+        }
+      ]
+    };
+    
+    // Default questions if no specific topic matches
+    const defaultQuestions = [
       {
-        question: "What is the main concept discussed in the provided material?",
+        question: `What are the main concepts discussed in ${topic}?`,
         type: "short_answer",
-        points: 5,
+        points: 7,
         difficulty: "medium",
-        hint: "Look for the central theme or main idea"
+        hint: "Focus on the key principles and theories"
       },
       {
-        question: "Explain the key principles mentioned in the content.",
+        question: `Explain the implementation details for ${topic}.`,
         type: "essay",
-        points: 10,
+        points: 15,
         difficulty: "hard",
-        hint: "Consider the fundamental rules or theories presented"
+        hint: "Consider the technical aspects and practical considerations"
       },
       {
-        question: "List the important components discussed.",
+        question: `Identify the important features of ${topic}.`,
         type: "short_answer",
         points: 5,
         difficulty: "easy",
-        hint: "Identify the main parts or elements"
+        hint: "List the main characteristics and capabilities"
       }
-    ]
-  });
+    ];
+    
+    // Find matching topic questions or use default
+    let selectedQuestions = defaultQuestions;
+    for (const [key, questions] of Object.entries(questionTemplates)) {
+      if (topic.toLowerCase().includes(key.toLowerCase())) {
+        selectedQuestions = questions;
+        break;
+      }
+    }
+    
+    return { assignments: selectedQuestions };
+  };
+  
+  return JSON.stringify(generateDynamicMockQuestions(prompt));
 }
 
 export default {

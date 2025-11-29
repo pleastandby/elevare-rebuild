@@ -4,7 +4,7 @@ import ViewStudents from "./Sections/Faculty/ViewStudents";
 import CreateAssignments from "./Sections/Faculty/CreateAssignments";
 import UploadSyllabus from "./Sections/Faculty/UploadSyllabus";
 import ViewResults from "./Sections/Faculty/ViewResults";
-import ViewAssignmentsSimpleWorking from "./Sections/Faculty/ViewAssignmentsSimpleWorking";
+import ViewAssignments from "./Sections/Faculty/ViewAssignments";
 
 const FacultyDashboard = ({setToken}: {setToken: (token: string) => void}) => {
    
@@ -46,8 +46,8 @@ const FacultyDashboard = ({setToken}: {setToken: (token: string) => void}) => {
         console.log('👥 Rendering View Students');
         return <ViewStudents />
       case 'View Assignments':
-        console.log('📋 Rendering View Assignments (Simple Working Version)');
-        return <ViewAssignmentsSimpleWorking/>
+        console.log('📋 Rendering View Assignments (TEST SIMPLE)');
+        return <ViewAssignments/>
       case 'Create Assignments':
         console.log('➕ Rendering Create Assignments');
         return <CreateAssignments onNavigateToUpload={() => handleOptionChange('Upload Syllabus')} />
