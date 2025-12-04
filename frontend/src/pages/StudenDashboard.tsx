@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import DashboardPage from './Sections/Students/DashboardPage';
-import Notifications from './Sections/Students/Notifications';
+import OverviewPage from './Sections/Students/OverviewPage';
+import ProfilePage from './Sections/Students/ProfilePage';
 import Assignments from './Sections/Students/Assignments';
 import Results from './Sections/Students/Results';
 
@@ -16,16 +16,16 @@ const StudenDashboard = ({setToken}: {setToken: (token: string) => void}) => {
 
   const renderContent = () => {
     switch (selectedOption) {
-      case 'DashboardPage':
-        return <DashboardPage />
-      case 'Notifications':
-        return <Notifications />
+      case 'Overview':
+        return <OverviewPage />
       case 'Assignments':
         return <Assignments />
       case 'Results':
         return <Results />
+      case 'Profile':
+        return <ProfilePage />
       default:
-        return <DashboardPage />
+        return <OverviewPage />
     }
   }
   return (
@@ -37,14 +37,10 @@ const StudenDashboard = ({setToken}: {setToken: (token: string) => void}) => {
         <div className="flex flex-col">
           <ul className="flex flex-col gap-2 p-2 m-2">
             <li 
-              className={`m-2 p-2 w-full cursor-pointer rounded-lg transition-colors duration-300 ${selectedOption === 'DashboardPage' ? 'bg-gray-800 text-gray-200 font-[500]' : 'text-gray-500 hover:bg-gray-300 hover:text-gray-800'}`} 
-              onClick={() => handleOptionChange('DashboardPage')}
+              className={`m-2 p-2 w-full cursor-pointer rounded-lg transition-colors duration-300 ${selectedOption === 'Overview' ? 'bg-gray-800 text-gray-200 font-[500]' : 'text-gray-500 hover:bg-gray-300 hover:text-gray-800'}`} 
+              onClick={() => handleOptionChange('Overview')}
               >Dashboard
             </li>
-            <li 
-              className={`m-2 p-2 w-full cursor-pointer rounded-lg transition-colors duration-300 ${selectedOption === 'Notifications' ? 'bg-gray-800 text-gray-200 font-[500]' : 'text-gray-500 hover:bg-gray-300 hover:text-gray-800'}`} 
-              onClick={() => handleOptionChange('Notifications')}
-            >Notifications</li>
             <li 
               className={`m-2 p-2 w-full cursor-pointer rounded-lg transition-colors duration-300 ${selectedOption === 'Assignments' ? 'bg-gray-800 text-gray-200 font-[500]' : 'text-gray-500 hover:bg-gray-300 hover:text-gray-800'}`} 
               onClick={() => handleOptionChange('Assignments')}
@@ -53,6 +49,10 @@ const StudenDashboard = ({setToken}: {setToken: (token: string) => void}) => {
               className={`m-2 p-2 w-full cursor-pointer rounded-lg transition-colors duration-300 ${selectedOption === 'Results' ? 'bg-gray-800 text-gray-200 font-[500]' : 'text-gray-500 hover:bg-gray-300 hover:text-gray-800'}`} 
               onClick={() => handleOptionChange('Results')}
             >Results</li>
+            <li 
+              className={`m-2 p-2 w-full cursor-pointer rounded-lg transition-colors duration-300 ${selectedOption === 'Profile' ? 'bg-gray-800 text-gray-200 font-[500]' : 'text-gray-500 hover:bg-gray-300 hover:text-gray-800'}`} 
+              onClick={() => handleOptionChange('Profile')}
+            >Profile</li>
           </ul>
         </div>
       </nav>

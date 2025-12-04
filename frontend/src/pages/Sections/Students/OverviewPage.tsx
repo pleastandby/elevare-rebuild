@@ -1,5 +1,5 @@
 
-const DashboardPage = () => {
+const OverviewPage = () => {
   return (
     <div>
       <h1 className="text-2xl font-bold">DashboardPage</h1>
@@ -8,4 +8,4 @@ const DashboardPage = () => {
   )
 }
 
-export default DashboardPage
+export default OverviewPage
