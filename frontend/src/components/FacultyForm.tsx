@@ -6,99 +6,104 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const FacultyForm = ({setToken} : {setToken: (token: string) => void}) => {
-
   const [name, setName] = useState('');
   const [facultyId, setFacultyId] = useState('');
+  const [subject, setSubject] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [currentMode, setCurrectMode] = useState("Login")
-
-  const fromSubmission = async (event : React.FormEvent<HTMLFormElement>) =>{
+  const formSubmission = async (event : React.FormEvent<HTMLFormElement>) =>{
     event.preventDefault()
+    setIsLoading(true)
+    
+    try {
+      const response = await axios.post(backendUrl + "/api/student/facultyregister", {name, faculty_id: facultyId, subject, email, password})
 
-    if (currentMode === "Register") {
-      try {
-        const response = await axios.post(backendUrl + "/api/user/facultyregister", {name, facultyId, email, password})
-
-        if(response.data.success){
-          toast.success(response.data.message)
-          setToken(response.data.token)
-        }else{
-          toast.error(response.data.message)
-          console.log(response.data.error)
-        }
-      } catch (error) {
-        console.log(error)
+      if(response.data.success){
+        toast.success("Faculty registration successful!")
+        setToken(response.data.token)
+      }else{
+        toast.error(response.data.message || 'Registration failed')
       }
-      
-    } else if (currentMode === "Login") {
-      try {
-        const response = await axios.post(backendUrl + "/api/user/facultylogin", {name, facultyId,email, password})
-
-        if(response.data.success){
-          toast.success(response.data.message)
-          setToken(response.data.token)
-        }else{
-          toast.error(response.data.message)
-          console.log(response.data.error)
-        }
-      } catch (error) {
-        console.log(error)
+    } catch (error : any) {
+      console.log(error)
+      if (error.response?.status === 400) {
+        toast.error('Invalid registration details. Please check your information.')
+      } else if (error.response?.status === 409) {
+        toast.error('Email or Faculty ID already registered.')
+      } else if (!error.response) {
+        toast.error('Network error. Please check your connection.')
+      } else {
+        toast.error(error.response?.data?.message || 'Registration failed. Please try again.')
       }
-    }
-    else{
-      toast.error("Invalid Mode")
+    } finally {
+      setIsLoading(false)
     }
   }
 
   return (
-    <div>
-      <div className="flex gap-2 justify-center items-center">
-        <button 
-        className={`p-3 rounded-tl-lg rounded-tr-lg font-[500] transition-all duration-300 ease-in-out ${currentMode === "Login" ? "bg-[#0079fc] text-white" : "bg-gray-200 text-black"}`}
-        onClick={() => setCurrectMode("Login")}
-        >Login</button>
-
-        <button
-        className={`p-3 rounded-tl-lg rounded-tr-lg font-[500] transition-all duration-300 ease-in-out ${currentMode === "Register" ? "bg-[#0079fc] text-white" : "bg-gray-200 text-black"}`}
-        onClick={() => setCurrectMode("Register")}
-        >Register</button>
+    <form className="space-y-6" onSubmit={formSubmission}>
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Faculty Registration</h2>
+        <p className="text-gray-600">Create your faculty account to get started</p>
       </div>
-      <div className="relative overflow-hidden">
-        {currentMode === "Login" ? (
-          <form className="w-full space-y-6 animate-in fade-in slide-in-from-left-5 duration-300" onSubmit={fromSubmission}>
-            <div className="text-center mb-8">
-                <h1 className="font-bold text-3xl text-red-600">Faculty Login</h1>
-            </div>
-            <div className="space-y-4">
-              <Input type="text" label="Name" placeholder="Your Name" value={name} onChange={setName} />
-              <Input type="text" label="Faculty Id" placeholder="XXXX" value={facultyId} onChange={setFacultyId} />
-              <Input type="email" label="Email" placeholder="faculty@example.com" value={email} onChange={setEmail} />
-              <Input type="password" label="Password" placeholder="password" value={password} onChange={setPassword} />
-            </div>
-            <div className="pt-4">
-              <Button content="Login" color="primary" />
-            </div>
-        </form>
-      ) : (
-        <form className="w-full space-y-6 animate-in fade-in slide-in-from-right-5 duration-300" onSubmit={fromSubmission}>
-          <div className="text-center mb-8">
-              <h1 className="font-bold text-3xl text-red-600">Faculty Register</h1>
-          </div>
-          <div className="space-y-4">
-            <Input type="text" label="Name" placeholder="Your Name" value={name} onChange={setName} />
-            <Input type="text" label="Faculty Id" placeholder="XXXX" value={facultyId} onChange={setFacultyId} />
-            <Input type="email" label="Email" placeholder="faculty@example.com" value={email} onChange={setEmail} />
-            <Input type="password" label="Password" placeholder="password" value={password} onChange={setPassword} />
-          </div>
-          <div className="pt-4">
-            <Button content="Register" color="primary" />
-          </div>
-        </form>
-      )}
+      
+      <div className="space-y-4">
+        <Input 
+          type="text" 
+          label="Full Name" 
+          placeholder="Your full name" 
+          value={name}
+          onChange={setName}
+        />
+        <Input 
+          type="text" 
+          label="Faculty ID" 
+          placeholder="Your faculty ID" 
+          value={facultyId}
+          onChange={setFacultyId}
+        />
+        <Input 
+          type="text" 
+          label="Subject" 
+          placeholder="Your subject specialization" 
+          value={subject}
+          onChange={setSubject}
+        />
+        <Input 
+          type="email" 
+          label="Email" 
+          placeholder="Your email address" 
+          value={email}
+          onChange={setEmail}
+        />
+        <Input 
+          type="password" 
+          label="Password" 
+          placeholder="Your password"
+          value={password}
+          onChange={setPassword}
+        />
       </div>
-    </div>
+      
+      <div className="pt-4">
+        <Button content="Create Faculty Account" color="primary" disabled={isLoading}/>
+      </div>
+      
+      <div className="text-center">
+        <p className="text-sm text-gray-600">
+          Already have an account? 
+          <button 
+            type="button"
+            onClick={() => window.location.reload()}
+            className="text-gray-900 hover:text-gray-700 font-medium ml-1"
+          >
+            Login here
+          </button>
+        </p>
+      </div>
+    </form>
   )
 }
 

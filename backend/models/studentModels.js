@@ -3,7 +3,7 @@ import validator from 'validator';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-const userSchema = new mongoose.Schema({
+const studentSchema = new mongoose.Schema({
     name: { 
         type: String, 
         required: [true, 'Please add a name'],
@@ -14,6 +14,19 @@ const userSchema = new mongoose.Schema({
         type: Number, 
         required: [true, 'Please add a roll number'],
         unique: true
+    },
+    department: {
+        type: String,
+        required: [true, 'Please add a department'],
+        enum: ['Computer Science', 'Engineering', 'Business', 'Arts', 'Science', 'Medicine'],
+        default: 'Computer Science'
+    },
+    semester: {
+        type: Number,
+        required: [true, 'Please add a semester'],
+        min: [1, 'Semester must be at least 1'],
+        max: [8, 'Semester cannot be more than 8'],
+        default: 1
     },
     email: { 
         type: String, 
@@ -39,13 +52,21 @@ const userSchema = new mongoose.Schema({
     },
     lastLogin: {
         type: Date
+    },
+    resetPasswordOTP: {
+        type: String,
+        select: false
+    },
+    resetPasswordOTPExpires: {
+        type: Date,
+        select: false
     }
 }, {
     timestamps: true
 });
 
 // Hash password before saving
-userSchema.pre('save', async function(next) {
+studentSchema.pre('save', async function(next) {
     if (!this.isModified('password')) {
         return next();
     }
@@ -54,12 +75,12 @@ userSchema.pre('save', async function(next) {
 });
 
 // Method to match password
-userSchema.methods.matchPassword = async function(enteredPassword) {
+studentSchema.methods.matchPassword = async function(enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
 
 // Generate JWT token
-userSchema.methods.getSignedJwtToken = function() {
+studentSchema.methods.getSignedJwtToken = function() {
     return jwt.sign(
         { id: this._id, role: this.role },
         process.env.JWT_SECRET,
@@ -67,6 +88,6 @@ userSchema.methods.getSignedJwtToken = function() {
     );
 };
 
-const User = mongoose.models.user || mongoose.model('user', userSchema);
+const Student = mongoose.models.student || mongoose.model('student', studentSchema);
 
-export default User;
+export default Student;

@@ -5,6 +5,7 @@ import fs from "fs";
 import mongoose from "mongoose";
 import { upload } from "../config/multerConfig.js";
 import { File } from "../models/uploadModels.js";
+import Syllabus from "../models/syllabusModels.js";
 
 const router = express.Router();
 
@@ -13,7 +14,7 @@ router.post("/:userType", upload.single("file"), async (req, res) => {
   try {
     const userType = req.params.userType;
 
-    if (!["students", "teachers"].includes(userType)) {
+    if (!["students", "teachers", "faculty"].includes(userType)) {
       return res.status(400).json({ error: "Invalid user type" });
     }
 

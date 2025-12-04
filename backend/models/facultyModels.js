@@ -10,10 +10,15 @@ const facultySchema = new mongoose.Schema({
         trim: true,
         maxlength: [50, 'Name cannot be more than 50 characters']
     },
-    facultyId: { 
+    faculty_id: { 
         type: String, 
         required: [true, 'Please provide a faculty ID'],
         unique: true,
+        trim: true
+    },
+    subject: {
+        type: String,
+        required: [true, 'Please add a subject'],
         trim: true
     },
     email: { 
@@ -33,9 +38,6 @@ const facultySchema = new mongoose.Schema({
         type: String, 
         enum: ['faculty', 'admin', 'hod'],
         default: 'faculty' 
-    },
-    department: {
-        type: String
     },
     isActive: {
         type: Boolean,

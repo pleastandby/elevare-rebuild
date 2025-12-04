@@ -17,7 +17,7 @@ const Header = ({ setToken }: { setToken: (token: string) => void }) => {
           setLoading(false);
           return;
         }
-        const { data } = await axios.get(`${backendUrl}/api/user/me`, {
+        const { data } = await axios.get(`${backendUrl}/api/student/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setProfile({
@@ -26,7 +26,7 @@ const Header = ({ setToken }: { setToken: (token: string) => void }) => {
           email: data.data.email,
         });
       } catch (err) {
-        console.error("Failed to load user profile", err);
+        console.error("Failed to load student profile", err);
       } finally {
         setLoading(false);
       }

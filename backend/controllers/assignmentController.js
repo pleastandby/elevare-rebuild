@@ -9,7 +9,7 @@ export const createAssignment = async (req, res) => {
         console.log('Request file:', req.file);
         console.log('User from auth:', req.user);
         
-        const { name, description, duedate, keywords, instructions, syllabus, existingFilePath, existingFileName, count } = req.body;
+        const { name, description, duedate, keywords, instruction, syllabus, existingFilePath, existingFileName, count } = req.body;
         const uploadedFile = req.file;
         
         const assignmentData = {
@@ -17,10 +17,10 @@ export const createAssignment = async (req, res) => {
             description,
             duedate,
             keywords: Array.isArray(keywords) ? keywords : keywords?.split(',').map(k => k.trim()) || [],
-            instructions,
+            instruction,
             syllabus,
             count: count || 5,
-            facultyId: req.user.id,
+            faculty_id: req.user._id,
         };
 
         // Handle file upload (either from multer or from existing file path)
@@ -79,7 +79,7 @@ export const getFacultyAssignments = async (req, res) => {
         console.log('🔎 Query: AssignmentRecords.find({ facultyId: req.user.id })');
         console.log('🔎 Query params:', { facultyId: req.user.id });
         
-        const assignments = await AssignmentRecords.find({ facultyId: req.user.id })
+        const assignments = await AssignmentRecords.find({ faculty_id: req.user._id })
             .sort({ createdAt: -1 });
             
         console.log('📊 Found assignments:', assignments.length);
@@ -106,7 +106,7 @@ export const getAssignmentById = async (req, res) => {
     try {
         const assignment = await AssignmentRecords.findOne({
             _id: req.params.id,
-            facultyId: req.user.id
+            faculty_id: req.user.id
         });
 
         if (!assignment) {
@@ -142,7 +142,7 @@ export const updateAssignment = async (req, res) => {
         }
 
         const assignment = await AssignmentRecords.findOneAndUpdate(
-            { _id: req.params.id, facultyId: req.user.id },
+            { _id: req.params.id, faculty_id: req.user._id },
             updates,
             { new: true, runValidators: true }
         );
@@ -173,7 +173,7 @@ export const deleteAssignment = async (req, res) => {
     try {
         const assignment = await AssignmentRecords.findOneAndDelete({
             _id: req.params.id,
-            facultyId: req.user.id
+            faculty_id: req.user._id
         });
 
         if (!assignment) {

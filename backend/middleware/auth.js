@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import asyncHandler from './async.js';
 import ErrorResponse from '../utils/errorResponse.js';
-import User from '../models/userModels.js';
+import Student from '../models/studentModels.js';
 import Faculty from '../models/facultyModels.js';
 
 // Protect routes
@@ -41,7 +41,7 @@ const protect = asyncHandler(async (req, res, next) => {
             user = await Faculty.findById(decoded.id).select('-password');
             console.log('👨‍🏫 Faculty user found:', !!user);
         } else {
-            user = await User.findById(decoded.id).select('-password');
+            user = await Student.findById(decoded.id).select('-password');
             console.log('👤 Regular user found:', !!user);
         }
 

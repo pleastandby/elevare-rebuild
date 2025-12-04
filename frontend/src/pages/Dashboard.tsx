@@ -21,7 +21,7 @@ const Dashboard = ({setToken}: {setToken: (token: string) => void}) => {
           return;
         }
 
-        const response = await axios.get(backendUrl + "/api/user/role", {
+        const response = await axios.get(backendUrl + "/api/student/role", {
           headers: {
             'Authorization': `Bearer ${token}`
           }

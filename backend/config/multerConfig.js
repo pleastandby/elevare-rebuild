@@ -16,8 +16,8 @@ const ensureDir = (dirPath) => {
 // Dynamic storage location based on user type
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const userType = req.params.userType; // 'students' or 'teachers'
-    const uploadPath = path.join(baseDir, userType);
+    const userType = req.params.userType; // 'students' or 'faculty'
+    const uploadPath = path.join(baseDir, userType === 'teachers' ? 'faculty' : (userType || 'faculty'));
 
     ensureDir(uploadPath);
     cb(null, uploadPath);
@@ -31,3 +31,20 @@ const storage = multer.diskStorage({
 });
 
 export const upload = multer({ storage });
+
+// Faculty-specific upload configuration
+const facultyStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = path.join(baseDir, 'faculty');
+    ensureDir(uploadPath);
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    const originalName = path.basename(file.originalname, path.extname(file.originalname));
+    const dateTime = new Date().toISOString().replace(/[:.]/g, '-');
+    const ext = path.extname(file.originalname);
+    cb(null, `${originalName}_${dateTime}${ext}`);
+  },
+});
+
+export const facultyUpload = multer({ storage: facultyStorage });

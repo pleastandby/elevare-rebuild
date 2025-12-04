@@ -4,7 +4,8 @@ import 'dotenv/config';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import connectDB from './config/mongodb.js';
-import userRouter from './routes/userRoutes.js';
+import studentRouter from './routes/studentRoutes.js';
+import syllabusRouter from './routes/syllabusRoutes.js';
 import errorHandler from './middleware/error.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import AssignmentRecordsRouter from './routes/AssignmentRecordRouter.js';
@@ -30,7 +31,8 @@ app.use("/uploads", express.static(path.join(__dirname, 'uploads')));
 app.use("/upload", uploadRoutes);
 
 // API Routes
-app.use('/api/user', userRouter);
+app.use('/api/student', studentRouter);
+app.use('/api/syllabus', syllabusRouter);
 app.use('/api/assignment', AssignmentRecordsRouter);
 app.use('/api/ai', aiRoutes);
 

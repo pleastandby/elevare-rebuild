@@ -1,19 +1,21 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { loginUser, registerUser, getMe } from '../controllers/userControllers.js';
+import { loginUser, registerUser, getMe, forgotPassword, verifyOTP } from '../controllers/studentControllers.js';
 import { registerFaculty, loginFaculty } from '../controllers/facultyControllers.js';
 import { protect } from '../middleware/auth.js';
-import userModel from '../models/userModels.js';
+import studentModel from '../models/studentModels.js';
 import facultyModel from '../models/facultyModels.js';
 
-const userRouter = express.Router();
+const studentRouter = express.Router();
 
-userRouter.post('/register', registerUser);
-userRouter.post('/login', loginUser);
-userRouter.post('/facultyregister', registerFaculty);
-userRouter.post('/facultylogin', loginFaculty);
-userRouter.get('/me', protect, getMe);
-userRouter.get('/role', async (req, res) => {
+studentRouter.post('/register', registerUser);
+studentRouter.post('/login', loginUser);
+studentRouter.post('/forgot-password', forgotPassword);
+studentRouter.post('/verify-otp', verifyOTP);
+studentRouter.post('/facultyregister', registerFaculty);
+studentRouter.post('/facultylogin', loginFaculty);
+studentRouter.get('/me', protect, getMe);
+studentRouter.get('/role', async (req, res) => {
     try {
         const token = req.headers.authorization?.split(" ")[1];
         if (!token) {
@@ -29,7 +31,7 @@ userRouter.get('/role', async (req, res) => {
         }
 
         // If not faculty, check student
-        user = await userModel.findById(decoded.id);
+        user = await studentModel.findById(decoded.id);
         if (user) {
             return res.json({success: true, role: "student"});
         }
@@ -41,4 +43,4 @@ userRouter.get('/role', async (req, res) => {
     }
 });
 
-export default userRouter;
+export default studentRouter;

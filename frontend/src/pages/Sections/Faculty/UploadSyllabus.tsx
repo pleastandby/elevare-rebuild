@@ -2,26 +2,31 @@ import { useState, type ChangeEvent, type FormEvent, useEffect } from "react";
 import { MdOutlineDriveFolderUpload } from "react-icons/md";
 import axios from "axios";
 import { backendUrl } from "../../../App";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 const UploadSyllabus = () => {
 
   const [fileName, setFileName] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
-  const [uploadedFiles, setUploadedFiles] = useState<Array<{ _id: string; name: string; size: number; uploadDate: string; path: string }>>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<Array<{ _id: string; originalName: string; size: number; uploadDate: string; path: string }>>([]);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [lastUploadedFile, setLastUploadedFile] = useState<{name: string, date: string} | null>(null);
 
   const fetchFiles = async () => {
     try {
-      console.log('Fetching files from backend...');
-      const response = await axios.get(`${backendUrl}/upload/teachers/files`);
+      console.log('Fetching syllabi from backend...');
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${backendUrl}/api/syllabus`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       console.log('Fetch response:', response.data);
-      console.log('Files received:', response.data.files);
-      setUploadedFiles(response.data.files);
+      console.log('Syllabi received:', response.data.data);
+      setUploadedFiles(response.data.data);
     } catch (error) {
-      console.error("Error fetching files:", error);
+      console.error("Error fetching syllabi:", error);
     }
   };
 
@@ -36,17 +41,18 @@ const UploadSyllabus = () => {
     setIsLoading(true);
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("userType", "teachers");
 
     try {
-      const res = await axios.post(`${backendUrl}/upload/teachers`, formData, {
+      const token = localStorage.getItem('token');
+      const res = await axios.post(`${backendUrl}/api/syllabus/upload`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`
         },
       });
 
       console.log('Upload response received:', res.data);
-      console.log('File data from response:', res.data.file);
+      console.log('Syllabus data from response:', res.data.data);
 
       toast.success(res.data.message || "Syllabus uploaded successfully!");
 
@@ -67,7 +73,7 @@ const UploadSyllabus = () => {
       await fetchFiles();
     } catch (err: any) {
       console.log(err);
-      toast.error(err.response?.data?.error || "Failed to upload syllabus. Please try again.");
+      toast.error(err.response?.data?.message || "Failed to upload syllabus. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -75,12 +81,17 @@ const UploadSyllabus = () => {
 
   const deleteFile = async (fileId: string) => {
     try {
-      await axios.delete(`${backendUrl}/upload/teachers/files/${fileId}`);
-      toast.success("File deleted successfully!");
+      const token = localStorage.getItem('token');
+      await axios.delete(`${backendUrl}/api/syllabus/${fileId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      toast.success("Syllabus deleted successfully!");
       await fetchFiles();
     } catch (error) {
-      console.error("Error deleting file:", error);
-      toast.error("Failed to delete file.");
+      console.error("Error deleting syllabus:", error);
+      toast.error("Failed to delete syllabus.");
     }
   };
 
@@ -151,7 +162,7 @@ const UploadSyllabus = () => {
         <div className="space-y-3">
           {uploadedFiles.length > 0 ? (
             uploadedFiles.map(file => {
-              const fileName = file.name || 'Document';
+              const fileName = file.originalName || 'Document';
               const fileSize = Math.round(file.size / 1024);
               const uploadDate = new Date(file.uploadDate).toLocaleDateString('en-US', {
                 year: 'numeric',

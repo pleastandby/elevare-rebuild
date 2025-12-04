@@ -6,13 +6,13 @@ import asyncHandler from '../middleware/async.js';
 // @route   POST /api/faculty/register
 // @access  Public (or protect + admin if needed)
 const registerFaculty = asyncHandler(async (req, res, next) => {
-    const { name, facultyId, email, password } = req.body;
+    const { name, faculty_id, subject, email, password } = req.body;
 
     // Check if faculty already exists
     const facultyExists = await Faculty.findOne({ 
         $or: [
             { email },
-            { facultyId }
+            { faculty_id }
         ]
     });
 
@@ -23,7 +23,8 @@ const registerFaculty = asyncHandler(async (req, res, next) => {
     // Create faculty
     const faculty = await Faculty.create({
         name,
-        facultyId,
+        faculty_id,
+        subject,
         email,
         password,
         role: 'faculty'

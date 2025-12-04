@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 
 const AssignmentSchema = new mongoose.Schema({
+    assignment_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        default: () => new mongoose.Types.ObjectId(),
+        unique: true
+    },
     name: {
         type: String,
         required: [true, "Please add a name"],
@@ -16,7 +21,7 @@ const AssignmentSchema = new mongoose.Schema({
         type: Date,
         required: [true, "Please add a due date"]
     },
-    instructions: {
+    instruction: {
         type: String,
         required: [true, "Please add instructions"],
         trim: true
@@ -39,17 +44,17 @@ const AssignmentSchema = new mongoose.Schema({
         default: null
     },
     generatedAssignments: {
-        type: Array,
-        default: []
+        type: Object,
+        default: {}
     },
     aiGenerated: {
         type: Boolean,
         default: false
     },
-    facultyId: {
-        type: String,
-        required: [true, "Please provide a valid faculty ID"],
-        trim: true
+    faculty_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Faculty',
+        required: [true, "Please provide a valid faculty ID"]
     },
     createdAt: {
         type: Date,
@@ -69,7 +74,7 @@ const AssignmentSchema = new mongoose.Schema({
 AssignmentSchema.index({
     name: 'text',
     description: 'text',
-    instructions: 'text',
+    instruction: 'text',
     syllabus: 'text',
     'keywords': 'text'
 }, {
@@ -77,7 +82,7 @@ AssignmentSchema.index({
         name: 10,
         keywords: 5,
         description: 3,
-        instructions: 2,
+        instruction: 2,
         syllabus: 1
     }
 });

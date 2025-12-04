@@ -15,7 +15,7 @@ export const RoleGuard: React.FC<RoleGuardProps> = ({
   allowedRoles = [],
   fallback = <div>Access denied</div>
 }) => {
-  const { user, isLoading } = useAuth();
+  const { student, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -25,11 +25,11 @@ export const RoleGuard: React.FC<RoleGuardProps> = ({
     );
   }
 
-  if (!user) {
+  if (!student) {
     return <div>Please log in to access this content</div>;
   }
 
-  if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
+  if (allowedRoles.length > 0 && !allowedRoles.includes(student.role)) {
     return <>{fallback}</>;
   }
 

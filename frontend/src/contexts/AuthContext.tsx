@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 
-export interface User {
+export interface Student {
   id: string;
   name: string;
   email: string;
@@ -11,9 +11,9 @@ export interface User {
 }
 
 interface AuthContextType {
-  user: User | null;
+  student: Student | null;
   token: string | null;
-  login: (token: string, user: User) => void;
+  login: (token: string, student: Student) => void;
   logout: () => void;
   isLoading: boolean;
   isAuthenticated: boolean;
@@ -34,7 +34,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [student, setStudent] = useState<Student | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -49,22 +49,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(false);
   }, []);
 
-  const login = (newToken: string, userData: User) => {
+  const login = (newToken: string, studentData: Student) => {
     setToken(newToken);
-    setUser(userData);
+    setStudent(studentData);
     localStorage.setItem('token', newToken);
-    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('student', JSON.stringify(studentData));
   };
 
   const logout = () => {
     setToken(null);
-    setUser(null);
+    setStudent(null);
     localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem('student');
   };
 
   const value: AuthContextType = {
-    user,
+    student,
     token,
     login,
     logout,

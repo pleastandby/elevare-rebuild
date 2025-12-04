@@ -10,7 +10,7 @@ interface UploadedFile {
   path: string;
   size: number;
   uploadDate: string;
-  userType: string;
+  faculty_id: string;
 }
 
 interface CreateAssignmentsProps {
@@ -47,17 +47,22 @@ const CreateAssignments = ({ onNavigateToUpload }: CreateAssignmentsProps) => {
 
   const fetchUploadedFiles = async () => {
     try {
-      const response = await axios.get(`${backendUrl}/upload/teachers/files`);
-      setUploadedFiles(response.data.files);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${backendUrl}/api/syllabus`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setUploadedFiles(response.data.data);
 
       // Initialize selection state for each file
       const initialSelection: { [key: string]: boolean } = {};
-      response.data.files.forEach((file: UploadedFile) => {
+      response.data.data.forEach((file: UploadedFile) => {
         initialSelection[file._id] = false;
       });
       setSelectedSyllabi(initialSelection);
     } catch (error) {
-      console.error('Error fetching uploaded files:', error);
+      console.error('Error fetching syllabi:', error);
     }
   };
 
@@ -96,7 +101,7 @@ const CreateAssignments = ({ onNavigateToUpload }: CreateAssignmentsProps) => {
       formDataToSend.append('name', formData.name);
       formDataToSend.append('description', formData.description);
       formDataToSend.append('duedate', formData.duedate);
-      formDataToSend.append('instructions', formData.instructions);
+      formDataToSend.append('instruction', formData.instructions);
       formDataToSend.append('syllabus', syllabusText);
       
       // Add the file if available
