@@ -3,7 +3,7 @@ import Overview from "./Sections/Faculty/Overview";
 import ViewStudents from "./Sections/Faculty/ViewStudents";
 import CreateAssignments from "./Sections/Faculty/CreateAssignments";
 import UploadSyllabus from "./Sections/Faculty/UploadSyllabus";
-import ViewResults from "./Sections/Faculty/ViewResults";
+import ViewResults from "./Sections/Faculty/Profile";
 import ViewAssignments from "./Sections/Faculty/ViewAssignments";
 
 const FacultyDashboard = ({setToken}: {setToken: (token: string) => void}) => {
@@ -95,7 +95,7 @@ const FacultyDashboard = ({setToken}: {setToken: (token: string) => void}) => {
             <li 
               className={`m-2 p-2 w-full cursor-pointer rounded-lg transition-colors duration-300 ${selectedOption === 'View Results' ? 'bg-gray-800 text-gray-200 font-[500]' : 'text-gray-500 hover:bg-gray-300 hover:text-gray-800'}`} 
               onClick={() => handleOptionChange('View Results')}
-            >View Results</li>
+            >Profile</li>
           </ul>
         </div>
       </nav>

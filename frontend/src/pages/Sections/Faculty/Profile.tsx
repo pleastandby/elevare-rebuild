@@ -1,4 +1,4 @@
-const ViewResults = () => {
+const Profile = () => {
     return (
       <div>
         <h1>View Results</h1>
@@ -6,4 +6,4 @@ const ViewResults = () => {
       </div>
     )
 }
-export default ViewResults
+export default Profile
